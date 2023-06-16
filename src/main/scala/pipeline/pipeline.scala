@@ -4,11 +4,11 @@ import cats.effect.IO
 import doobie.ConnectionIO
 import doobie.implicits.toConnectionIOOps
 import fs2.io.file.{Files, Path}
-import fs2.{Pipe, Stream, text}
+import fs2.{Pipe, Stream, Chunk, text}
 import model.Flight
 import model.parser.parseFlightOption
 import extract.{deleteFile, downloadFromURL, unzipFile}
-import load.insertRecord
+import load.{insertChunk}
 
 object pipeline {
   def downloadFlightFile(urlToDownload: String, zipFilePath: String, unzipFilePath: String, targetFileName: String): Stream[IO, Byte] =
@@ -28,5 +28,5 @@ object pipeline {
     .filter(_.isDefined)
     .map(_.get)
 
-  val flightSink: Pipe[IO, Flight, Unit] = _.evalMap(insertRecord)
+  val flightSink: Pipe[IO, Chunk[Flight], Unit] = _.evalMapChunk(insertChunk)
 }

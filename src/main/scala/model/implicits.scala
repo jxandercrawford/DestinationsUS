@@ -1,7 +1,7 @@
 package model
 
 import doobie.Write
-import doobie.implicits.javatime.*
+import doobie.postgres.implicits.*
 
 import java.time.{LocalDate, LocalDateTime}
 import java.sql.Timestamp
