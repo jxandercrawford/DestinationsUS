@@ -16,7 +16,7 @@ object main extends IOApp {
   val outFile = "outs/"
   val target = s"On_Time_Reporting_Carrier_On_Time_Performance_(1987_present)_${year}_$month.csv"
 
-  val chunkSize = 100
+  val chunkSize = 1000
 
   def run(args: List[String]): IO[ExitCode] =
 

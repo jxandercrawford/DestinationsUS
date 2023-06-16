@@ -31,7 +31,7 @@ object parser {
     yield v -> d
 
   def parseFlight(rawTuple: String): Flight =
-    val raw = rawTuple.replaceAll("\"\"", "\" \"").split(DELIMITER)
+    val raw = rawTuple.replaceAll("\"\"", "\" \"").split(DELIMITER).map(_.replaceAll("\"", ""))
     val originValues = parseSeq(ORIGIN_AIRPORT_MAPPING)(raw)
     val destinationValues = parseSeq(DESTINATION_AIRPORT_MAPPING)(raw)
     val flightValues = parseSeq(FLIGHT_MAPPING)(raw)

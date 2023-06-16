@@ -5,17 +5,16 @@ import cats.data.*
 import cats.effect.*
 import cats.free.Free
 import cats.implicits.*
-import doobie.*
+import doobie.{Update0, ConnectionIO, Transactor}
 import doobie.free.connection
 import doobie.implicits.*
-import doobie.util.transactor.Transactor.*
 import fs2.Chunk
 import model.implicits.{given_Write_Airport, given_Write_Flight}
 import model.{Airport, Flight}
 
 object load {
 
-  val xa = Transactor.fromDriverManager[IO](
+  private val xa = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
     "jdbc:postgresql:flights",
     "jxan",

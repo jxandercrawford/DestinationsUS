@@ -8,7 +8,7 @@ import fs2.{Pipe, Stream, Chunk, text}
 import model.Flight
 import model.parser.parseFlightOption
 import extract.{deleteFile, downloadFromURL, unzipFile}
-import load.{insertChunk}
+import load.insertChunk
 
 object pipeline {
   def downloadFlightFile(urlToDownload: String, zipFilePath: String, unzipFilePath: String, targetFileName: String): Stream[IO, Byte] =
