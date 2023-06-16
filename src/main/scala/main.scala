@@ -1,6 +1,6 @@
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2.text
-import pipeline.pipeline.{downloadFlightFile, filterNone, flightSink, pipeToFlight}
+import pipeline.pipeline.*
 
 import java.io.File
 import scala.language.postfixOps
@@ -23,10 +23,9 @@ object main extends IOApp {
     val src = downloadFlightFile(urlBase + urlFile, outBase + outZip, outBase + outFile, target)
     val pipe = src
       .through(text.utf8.decode)
-      .through(pipeToFlight)
-      .through(filterNone)
-      .chunkN(chunkSize)
-      .through(flightSink)
+      .through(pipeToFlightChunk(chunkSize))
+      .through(filterNoneChunk)
+      .through(flightSinkChunk)
 
     pipe.compile.drain.as(ExitCode.Success)
 }
