@@ -1,4 +1,4 @@
-package model
+package destinations.model
 
 import doobie.Write
 import doobie.postgres.implicits.*

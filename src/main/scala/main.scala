@@ -1,6 +1,8 @@
+package destinations
+
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2.text
-import pipeline.pipeline.*
+import destinations.pipeline.pipeline.*
 import config.getConfig
 
 import java.io.File

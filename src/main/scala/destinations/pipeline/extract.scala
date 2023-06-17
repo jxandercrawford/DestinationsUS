@@ -1,4 +1,4 @@
-package pipeline
+package destinations.pipeline
 
 import java.io.{File, FileInputStream, FileOutputStream, InputStream}
 import java.net.URL

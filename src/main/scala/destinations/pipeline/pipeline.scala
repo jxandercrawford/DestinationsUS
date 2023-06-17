@@ -1,14 +1,12 @@
-package pipeline
+package destinations.pipeline
 
 import cats.effect.IO
-import doobie.ConnectionIO
-import doobie.implicits.toConnectionIOOps
+import destinations.model.Flight
+import destinations.model.parser.parseFlightOption
+import destinations.pipeline.extract.{deleteFile, downloadFromURL, unzipFile}
+import destinations.pipeline.load.insertFlight
 import fs2.io.file.{Files, Path}
-import fs2.{Pipe, Stream, Chunk, text}
-import model.Flight
-import model.parser.parseFlightOption
-import extract.{deleteFile, downloadFromURL, unzipFile}
-import load.insertFlight
+import fs2.{Chunk, Pipe, Stream, text}
 
 object pipeline {
   def downloadFlightFile(urlToDownload: String, zipFilePath: String, unzipFilePath: String, targetFileName: String): Stream[IO, Byte] =
