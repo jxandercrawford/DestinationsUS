@@ -12,12 +12,14 @@ import fs2.Chunk
 import model.implicits.{given_Write_Airport, given_Write_Flight}
 import model.{Airport, Flight}
 
+// TODO: Load database details into properties or as a secret
+
 object load {
 
   private val xa = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
-    "jdbc:postgresql:flights",
-    "jxan",
+    "",
+    "",
     ""
   )
 
