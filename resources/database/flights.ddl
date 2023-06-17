@@ -16,7 +16,7 @@ CREATE TABLE airport(
 DROP TABLE IF EXISTS flight;
 
 CREATE TABLE flight(
-    id SERIAL PRIMARY KEY,
+    id GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     date DATE NOT NULL,
     origin INT NOT NULL,
     destination INT NOT NULL,

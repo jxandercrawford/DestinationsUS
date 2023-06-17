@@ -18,8 +18,8 @@ object load {
 
   private val xa = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
-    "",
-    "",
+    "jdbc:postgresql:flights",
+    "jxan",
     ""
   )
 
