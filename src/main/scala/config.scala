@@ -4,6 +4,7 @@ import java.util.*
 import scala.io.Source
 
 object config {
+
   private val propertiesPath = new File(".").getCanonicalPath + "/resources/application.properties"
   def getConfig: Either[Throwable, Properties] =
     val properties: Properties = new Properties()
