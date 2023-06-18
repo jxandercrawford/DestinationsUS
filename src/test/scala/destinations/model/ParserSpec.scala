@@ -1,4 +1,4 @@
-package model
+package destinations.model
 
 import implicits.DateUtils
 import org.scalatest.flatspec.AnyFlatSpec

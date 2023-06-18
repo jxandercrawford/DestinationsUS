@@ -1,4 +1,4 @@
-package model
+package destinations.model
 
 case class Airport(id: Int, name: String, city: String, state: String)
 

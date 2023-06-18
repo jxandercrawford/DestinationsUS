@@ -1,6 +1,6 @@
-package model
+package destinations.model
 
-import model.implicits.*
+import destinations.model.implicits.*
 
 object parser {
 
