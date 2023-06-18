@@ -18,6 +18,11 @@ object pipeline {
       }
     }.flatMap(_ => Files[IO].readAll(Path(unzipFilePath + targetFileName)))
 
+  val deleteFiles: String => IO[Unit] = filePath =>
+    IO {
+      deleteFile(filePath)
+    }
+
   val pipeToFlight: Pipe[IO, String, Option[Flight]] = _
     .through(text.lines)
     .map(parseFlightOption)

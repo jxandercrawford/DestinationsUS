@@ -13,7 +13,11 @@ object extract {
     new URL(urlToDownload) #> new File(downloadDestination) !!
 
   def deleteFile(fileToDelete: String): Unit =
-    File(fileToDelete).delete()
+    new File(fileToDelete) match
+      case f if f.isFile => f.delete()
+      case d if d.isDirectory =>
+        d.listFiles.foreach(f => deleteFile(f.getCanonicalPath));
+        d.delete()
     ()
 
   def unzipFile(zipFile: String, destination: String): Unit =

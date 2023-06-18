@@ -30,8 +30,12 @@ object main extends IOApp {
       .through(flightSinkChunk)
 
   def run(args: List[String]): IO[ExitCode] =
-    loadTranstats(properties.getProperty("month").toInt, properties.getProperty("year").toInt)
+    val month = properties.getProperty("month").toInt
+    val year = properties.getProperty("year").toInt
+
+    loadTranstats(month, year)
       .compile
       .drain
+      .flatMap(u => deleteFiles(projectRoot + properties.getProperty("data_directory_path") + s"${year}_$month/"))
       .as(ExitCode.Success)
 }
