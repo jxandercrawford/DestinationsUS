@@ -24,11 +24,8 @@ object pipeline {
     }
 
   val pipeToFlight: Pipe[IO, String, Option[Flight]] = _
-    .through(text.lines)
     .map(parseFlightOption)
-  val pipeToFlightChunk: Int => Pipe[IO, String, Chunk[Option[Flight]]] = chunkSize => _
-    .through(text.lines)
-    .chunkN(chunkSize)
+  val pipeToFlightChunk: Pipe[IO, Chunk[String], Chunk[Option[Flight]]] = _
     .map(_.map(parseFlightOption))
 
   val filterNone: Pipe[IO, Option[Flight], Flight] = _
