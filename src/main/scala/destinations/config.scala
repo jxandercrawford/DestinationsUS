@@ -12,6 +12,11 @@ type Year = Int
 object config {
 
   private val propertiesPath = new File(".").getCanonicalPath + "/resources/application.properties"
+
+  /**
+   * Load the application properties file located in this projects `/resources/applications.properties`.
+   * @return A properties object containing app settings.
+   */
   def getConfig: Either[Throwable, Properties] =
     val properties: Properties = new Properties()
 
@@ -22,6 +27,12 @@ object config {
     catch
       case e: Throwable => Left(e)
 
+  /**
+   * Generate a date range of months between a start and end date.
+   * @param start The date to start the range.
+   * @param end The date to end the range on.
+   * @return A LazyList of tuples containing a `Month` and a `Year` from start to end.
+   */
   def generateDateRange(start: LocalDate, end: LocalDate): LazyList[(Month, Year)] =
     val e = end.plusMonths(1)
     LazyList.iterate(start)(_.plusMonths(1))
