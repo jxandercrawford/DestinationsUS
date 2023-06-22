@@ -11,17 +11,17 @@ import fs2.{Chunk, Pipe, Stream, text}
 object pipeline {
   def downloadFlightFile(urlToDownload: String, zipFilePath: String, unzipFilePath: String, targetFileName: String): Stream[IO, Byte] =
     Stream.eval {
-      IO {
+      IO.cede *> IO.blocking {
         downloadFromURL(urlToDownload, zipFilePath)
         unzipFile(zipFilePath, unzipFilePath, "\\S+\\.csv")
         deleteFile(zipFilePath)
-      }
+      }.guarantee(IO.cede)
     }.flatMap(_ => Files[IO].readAll(Path(unzipFilePath + targetFileName)))
 
   val deleteFiles: String => IO[Unit] = filePath =>
-    IO {
+    IO.cede *> IO.blocking {
       deleteFile(filePath)
-    }
+    }.guarantee(IO.cede)
 
   val pipeToFlight: Pipe[IO, String, Option[Flight]] = _
     .map(parseFlightOption)
