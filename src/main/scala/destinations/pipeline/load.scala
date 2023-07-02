@@ -3,7 +3,7 @@ package destinations.pipeline
 import cats.effect.IO
 import cats.implicits.*
 import doobie.implicits.*
-import doobie.{ConnectionIO, Transactor, Update0}
+import doobie.*
 import fs2.Chunk
 
 import destinations.model.{Flight, Airport}
@@ -25,19 +25,31 @@ object load {
     ""
   )
 
-  private def createAirportInsert(airport: Airport): Update0 =
+  private def createAirportInsert(airport: Airport) =
     sql"INSERT INTO airport (id, name, city, state) VALUES ($airport) ON CONFLICT DO NOTHING;"
-      .update
+      .update.run
 
-  private def createFlightInsert(flight: Flight): Update0 =
+  private def createAirportInsert(airport: Seq[Airport]) =
+    val insertStatement: String = "INSERT INTO airport (id, name, city, state) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;"
+    Update[Airport](insertStatement).updateMany(airport)
+
+  private def createFlightInsert(flight: Flight) =
     sql"INSERT INTO flight (date, origin, destination) VALUES ($flight) ON CONFLICT DO NOTHING;"
-      .update
+      .update.run
+
+  private def createFlightInsert(flight: Seq[Flight]) =
+    val insertStatement: String = "INSERT INTO flight (date, origin, destination) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;"
+    Update[Flight](insertStatement).updateMany(flight)
 
   private def createRecordInsert(flight: Flight): ConnectionIO[Int] =
-    (createAirportInsert(flight.origin).run, createAirportInsert(flight.destination).run, createFlightInsert(flight).run).mapN(_+_+_)
+    (createAirportInsert(flight.origin), createAirportInsert(flight.destination), createFlightInsert(flight)).mapN(_+_+_)
 
   def insertFlight(flight: Flight): IO[Unit] =
     createRecordInsert(flight).void.transact(xa)
   def insertFlight(flights: Chunk[Flight]): IO[Unit] =
-    flights.map(createRecordInsert).sequence_.transact(xa)
+    (
+      createAirportInsert(flights.map(a => a.origin).toList),
+      createAirportInsert(flights.map(a => a.destination).toList),
+      createFlightInsert(flights.toList)
+    ).mapN(_+_+_).void.transact(xa)
 }
