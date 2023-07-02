@@ -1,27 +1,32 @@
 package destinations.pipeline
 
 import cats.effect.IO
+import fs2.*
 import destinations.model.Flight
 import destinations.model.parser.parseFlightOption
 import destinations.pipeline.extract.{deleteFile, downloadFromURL, unzipFile}
 import destinations.pipeline.load.insertFlight
 import fs2.io.file.{Files, Path}
-import fs2.{Chunk, Pipe, Stream, text}
+import fs2.{Chunk, Pipe, Pure, Stream, text}
+
+import java.io.{File, FileInputStream, FileOutputStream, InputStream}
+import java.net.URL
+import java.nio.file.Path
+import java.util.zip.ZipInputStream
 
 object pipeline {
-  def downloadFlightFile(urlToDownload: String, zipFilePath: String, unzipFilePath: String, targetFileName: String): Stream[IO, Byte] =
-    Stream.eval {
-      IO.cede *> IO.blocking {
-        downloadFromURL(urlToDownload, zipFilePath)
-        unzipFile(zipFilePath, unzipFilePath, "\\S+\\.csv")
-        deleteFile(zipFilePath)
-      }.guarantee(IO.cede)
-    }.flatMap(_ => Files[IO].readAll(Path(unzipFilePath + targetFileName)))
+  def readZippedUrl(target: String): Stream[IO, Byte] =
+    val download = URL(target).openStream()
+    val zis = ZipInputStream(download)
 
-  val deleteFiles: String => IO[Unit] = filePath =>
-    IO.cede *> IO.blocking {
-      deleteFile(filePath)
-    }.guarantee(IO.cede)
+    Stream(zis.getNextEntry)
+      .map {
+        case f if f.getName.matches(".*\\.csv") => Some(io.readInputStream(IO(zis), 4096))
+        case _ => None
+      }
+      .filter(_.isDefined)
+      .map(_.get)
+      .flatMap(f => f)
 
   val pipeToFlight: Pipe[IO, String, Option[Flight]] = _
     .map(parseFlightOption)

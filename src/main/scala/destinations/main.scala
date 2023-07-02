@@ -24,11 +24,8 @@ object main extends IOApp {
    * @return A stream of the file CSV lines.
    */
   private def loadTranstats(month: Int, year: Int): fs2.Stream[IO, Chunk[String]] =
-    val src = downloadFlightFile(
-      properties.getProperty("target_url_base") + s"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_${year}_$month.zip",
-      projectRoot + properties.getProperty("data_directory_path") + s"${year}_$month.zip",
-      projectRoot + properties.getProperty("data_directory_path") + s"${year}_$month/",
-      s"On_Time_Reporting_Carrier_On_Time_Performance_(1987_present)_${year}_$month.csv"
+    val src = readZippedUrl(
+      properties.getProperty("target_url_base") + s"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_${year}_$month.zip"
     )
 
     src
@@ -50,10 +47,5 @@ object main extends IOApp {
       .through(flightSinkChunk)
       .compile
       .drain
-      .flatMap(
-        _ => range.map(
-          (m, y) => deleteFiles(projectRoot + properties.getProperty("data_directory_path") + s"${y}_$m")
-        ).sequence_
-      )
       .as(ExitCode.Success)
 }
