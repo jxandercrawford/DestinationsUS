@@ -37,7 +37,7 @@ object main extends IOApp {
     val range = generateDateRange(start, end).toList
 
     fs2.Stream.emits(range).map(d => loadTranstats(d._1, d._2))
-      .parJoin(properties.getProperty("concurrency_degree_max").toInt)
+      .parJoin(1)
       .compile
       .drain
       .as(ExitCode.Success)
