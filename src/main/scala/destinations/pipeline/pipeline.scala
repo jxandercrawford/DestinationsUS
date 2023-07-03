@@ -4,7 +4,6 @@ import cats.effect.IO
 import fs2.*
 import destinations.model.Flight
 import destinations.model.parser.parseFlightOption
-import destinations.pipeline.extract.{deleteFile, downloadFromURL, unzipFile}
 import destinations.pipeline.load.insertFlight
 import fs2.io.file.{Files, Path}
 import fs2.{Chunk, Pipe, Pure, Stream, text}
@@ -47,4 +46,12 @@ object pipeline {
 
   val flightSink: Pipe[IO, Flight, Unit] = _.evalMap(insertFlight)
   val flightSinkChunk: Pipe[IO, Chunk[Flight], Unit] = _.evalMapChunk(insertFlight)
+
+  val flightPipeline: Stream[IO, Byte] => Int => Stream[IO, Unit] = source => chunkSize => source
+    .through(text.utf8.decode)
+    .through(text.lines)
+    .chunkN(chunkSize)
+    .through(pipeToFlightChunk)
+    .through(filterNoneChunk)
+    .through(flightSinkChunk)
 }

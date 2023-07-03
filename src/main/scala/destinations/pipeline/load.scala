@@ -25,19 +25,19 @@ object load {
     ""
   )
 
-  private def createAirportInsert(airport: Airport) =
+  private def createAirportInsert(airport: Airport): ConnectionIO[Int] =
     sql"INSERT INTO airport (id, name, city, state) VALUES ($airport) ON CONFLICT DO NOTHING;"
       .update.run
 
-  private def createAirportInsert(airport: Seq[Airport]) =
+  private def createAirportInsert(airport: Seq[Airport]): ConnectionIO[Int] =
     val insertStatement: String = "INSERT INTO airport (id, name, city, state) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;"
     Update[Airport](insertStatement).updateMany(airport)
 
-  private def createFlightInsert(flight: Flight) =
+  private def createFlightInsert(flight: Flight): ConnectionIO[Int] =
     sql"INSERT INTO flight (date, origin, destination) VALUES ($flight) ON CONFLICT DO NOTHING;"
       .update.run
 
-  private def createFlightInsert(flight: Seq[Flight]) =
+  private def createFlightInsert(flight: Seq[Flight]): ConnectionIO[Int] =
     val insertStatement: String = "INSERT INTO flight (date, origin, destination) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;"
     Update[Flight](insertStatement).updateMany(flight)
 
