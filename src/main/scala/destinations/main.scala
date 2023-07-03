@@ -36,8 +36,8 @@ object main extends IOApp {
 
     val range = generateDateRange(start, end).toList
 
-    fs2.Stream.emits(range).map(d => loadTranstats(d._1, d._2))
-      .parJoin(1)
+    fs2.Stream.emits(range)
+      .flatMap(d => loadTranstats(d._1, d._2))
       .compile
       .drain
       .as(ExitCode.Success)

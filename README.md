@@ -11,13 +11,7 @@ The database that the flights are written to is a simple data model only contain
 
 ![erd](resources/documentation/erd.png)
 
-While in most cases this pipeline will run monthly to collect the data from the most recent month, the initial loading of data will require many consecutive months to be run. In order to handle this type of loading operation the pipeline is able to concurrently run with multiple sources.
-
-![concurrency_diagram](resources/documentation/concurrency_diagram.png)
-
 ## To Do
-This project was initially a learning project to learn Typelevel programing basics and use Scala for data processing. This has led to inefficient in the pipeline. Below are some steps to address this.
-1. Profile the project
-2. Address issues with I/O tasks in concurrency
-3. Test
-4. Repeat
+A list of things to do to improve this pipeline.
+1. Allow concurrency. Currently errors due to postgres deadlock.
+2. Optimize
