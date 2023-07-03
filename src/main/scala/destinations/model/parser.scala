@@ -1,10 +1,12 @@
 package destinations.model
 
+import au.com.bytecode.opencsv.CSVReader
 import destinations.model.implicits.*
+import java.io.StringReader
 
 object parser {
 
-  private val DELIMITER = """(?!\B"[^"]*),(?![^"]*"\B)"""
+  private val rowReader: String => CSVReader = rawTuple => CSVReader(StringReader(rawTuple))
 
   private val ORIGIN_AIRPORT_MAPPING: Map[Int, String] = Map(
     11 -> "id",
@@ -31,7 +33,10 @@ object parser {
     yield v -> d
 
   def parseFlight(rawTuple: String): Flight =
-    val raw = rawTuple.replaceAll("\"\"", "\" \"").split(DELIMITER).map(_.replaceAll("\"", ""))
+    val row = rowReader(rawTuple)
+    val raw = row.readNext()
+    row.close()
+
     val originValues = parseSeq(ORIGIN_AIRPORT_MAPPING)(raw)
     val destinationValues = parseSeq(DESTINATION_AIRPORT_MAPPING)(raw)
     val flightValues = parseSeq(FLIGHT_MAPPING)(raw)

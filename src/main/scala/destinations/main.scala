@@ -1,14 +1,13 @@
 package destinations
 
 import cats.effect.{ExitCode, IO, IOApp}
-import fs2.{Chunk, text}
-import destinations.pipeline.pipeline.*
-import model.implicits.*
-import config.{getConfig, generateDateRange}
-import java.time.LocalDate
+import destinations.pipeline.pipeline.{flightPipeline, readZippedUrl}
+import config.{generateDateRange, getConfig}
+
 import java.io.File
-import scala.language.postfixOps
 import cats.implicits.*
+
+import java.time.LocalDate
 
 object main extends IOApp {
 
@@ -23,18 +22,12 @@ object main extends IOApp {
    * @param year A year to target.
    * @return A stream of the file CSV lines.
    */
-  private def loadTranstats(month: Int, year: Int): fs2.Stream[IO, Chunk[String]] =
-    val src = downloadFlightFile(
-      properties.getProperty("target_url_base") + s"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_${year}_$month.zip",
-      projectRoot + properties.getProperty("data_directory_path") + s"${year}_$month.zip",
-      projectRoot + properties.getProperty("data_directory_path") + s"${year}_$month/",
-      s"On_Time_Reporting_Carrier_On_Time_Performance_(1987_present)_${year}_$month.csv"
+  private def loadTranstats(month: Int, year: Int): fs2.Stream[IO, Unit] =
+    val src = readZippedUrl(
+      properties.getProperty("target_url_base") + s"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_${year}_$month.zip"
     )
 
-    src
-      .through(text.utf8.decode)
-      .through(text.lines)
-      .chunkN(properties.getProperty("chunk_size").toInt)
+    flightPipeline(src)(properties.getProperty("chunk_size").toInt)
 
   def run(args: List[String]): IO[ExitCode] =
 
@@ -43,17 +36,9 @@ object main extends IOApp {
 
     val range = generateDateRange(start, end).toList
 
-    fs2.Stream.emits(range).map(d => loadTranstats(d._1, d._2))
-      .parJoin(properties.getProperty("concurrency_degree_max").toInt)
-      .through(pipeToFlightChunk)
-      .through(filterNoneChunk)
-      .through(flightSinkChunk)
+    fs2.Stream.emits(range)
+      .flatMap(d => loadTranstats(d._1, d._2))
       .compile
       .drain
-      .flatMap(
-        _ => range.map(
-          (m, y) => deleteFiles(projectRoot + properties.getProperty("data_directory_path") + s"${y}_$m")
-        ).sequence_
-      )
       .as(ExitCode.Success)
 }

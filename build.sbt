@@ -15,4 +15,6 @@ libraryDependencies ++= Seq(
   "co.fs2"         %% "fs2-io"          % "3.7.0",
   "org.tpolecat"   %% "doobie-core"     % "1.0.0-RC1",
   "org.tpolecat"   %% "doobie-postgres" % "1.0.0-RC1",
+  "org.tpolecat"   %% "doobie-hikari"   % "1.0.0-RC1",
+  "net.sf.opencsv" %  "opencsv"         % "2.3"
 )
