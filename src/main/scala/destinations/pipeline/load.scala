@@ -34,7 +34,7 @@ object load {
     Update[Airport](insertStatement).updateMany(airport)
 
   private def createFlightInsert(flight: Flight): ConnectionIO[Int] =
-    sql"INSERT INTO flight (date, origin, destination) VALUES ($flight) ON CONFLICT DO NOTHING;"
+    sql"INSERT INTO flight (date, origin, destination, distance, airtime, departDelay, taxiOut, arriveDelay, taxiIn) VALUES ($flight) ON CONFLICT DO NOTHING;"
       .update.run
 
   private def createFlightInsert(flight: Seq[Flight]): ConnectionIO[Int] =
