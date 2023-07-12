@@ -38,7 +38,7 @@ object load {
       .update.run
 
   private def createFlightInsert(flight: Seq[Flight]): ConnectionIO[Int] =
-    val insertStatement: String = "INSERT INTO flight (date, origin, destination) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;"
+    val insertStatement: String = "INSERT INTO flight (date, origin, destination, distance, airtime, departDelay, taxiOut, arriveDelay, taxiIn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING;"
     Update[Flight](insertStatement).updateMany(flight)
 
   private def createRecordInsert(flight: Flight): ConnectionIO[Int] =

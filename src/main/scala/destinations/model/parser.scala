@@ -23,7 +23,13 @@ object parser {
   )
 
   private val FLIGHT_MAPPING: Map[Int, String] = Map(
-    5 -> "date"
+    5 -> "date",
+    54 -> "distance",
+    52 -> "airtime",
+    31 -> "departDelay",
+    36 -> "taxiOut",
+    42 -> "arriveDelay",
+    39 -> "taxiIn"
   )
 
   private def parseSeq[A](mapping: Map[Int, String])(x: Seq[A]): Map[String, A] =
@@ -41,8 +47,8 @@ object parser {
     val destinationValues = parseSeq(DESTINATION_AIRPORT_MAPPING)(raw)
     val flightValues = parseSeq(FLIGHT_MAPPING)(raw)
 
-    Flight(
-      flightValues("date").toDate("yyyy-MM-dd"),
+    Flight.fromMap(
+      flightValues,
       Airport.fromMap(originValues),
       Airport.fromMap(destinationValues)
     )
