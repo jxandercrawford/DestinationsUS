@@ -33,6 +33,8 @@ object implicits {
   }
 
   given Write[Airport] = Write[(Int, String, String, String)].contramap(c => (c.id, c.name, c.city, c.state))
-  given Write[Flight] = Write[(LocalDate, Int, Int)].contramap(c => (c.date, c.origin.id, c.destination.id))
-
+  given Write[Flight] = Write[(LocalDate, Int, Int, Int, Int, Int, Int, Int, Int)]
+    .contramap(c =>
+      (c.date, c.origin.id, c.destination.id, c.distance, c.airtime, c.departDelay, c.taxiOut, c.arriveDelay, c.taxiIn)
+    )
 }

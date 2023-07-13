@@ -73,6 +73,36 @@ class ParserSpec extends AnyFlatSpec {
     result.date shouldBe "2020-02-01".toDate("yyyy-MM-dd")
   }
 
+  "extractFlight" should "return with the correct distance" in {
+    val result = parser.parseFlight(RAW_INPUT)
+    result.distance shouldBe 661.00
+  }
+
+  "extractFlight" should "return with the correct airtime" in {
+    val result = parser.parseFlight(RAW_INPUT)
+    result.airtime shouldBe 96
+  }
+
+  "extractFlight" should "return with the correct departDelay" in {
+    val result = parser.parseFlight(RAW_INPUT)
+    result.departDelay shouldBe -2
+  }
+
+  "extractFlight" should "return with the correct taxiOut" in {
+    val result = parser.parseFlight(RAW_INPUT)
+    result.taxiOut shouldBe 17
+  }
+
+  "extractFlight" should "return with the correct arriveDelay" in {
+    val result = parser.parseFlight(RAW_INPUT)
+    result.arriveDelay shouldBe 1
+  }
+
+  "extractFlight" should "return with the correct taxiIn" in {
+    val result = parser.parseFlight(RAW_INPUT)
+    result.taxiIn shouldBe 12
+  }
+
   "extractFlightOption" should "return an Option[Flight]" in {
     val result = parser.parseFlightOption(RAW_INPUT)
     result shouldBe a [Option[Flight]]

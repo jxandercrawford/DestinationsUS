@@ -20,6 +20,12 @@ CREATE TABLE flight(
     date DATE NOT NULL,
     origin INT NOT NULL,
     destination INT NOT NULL,
+    distance INT NOT NULL,
+    airtime INT NOT NULL,
+    departDelay INT NOT NULL,
+    taxiOut INT,
+    arriveDelay INT NOT NULL,
+    taxiIn INT,
     FOREIGN KEY (origin) REFERENCES airport (id),
     FOREIGN KEY (destination) REFERENCES airport (id)
 );

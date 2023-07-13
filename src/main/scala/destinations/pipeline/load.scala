@@ -34,11 +34,11 @@ object load {
     Update[Airport](insertStatement).updateMany(airport)
 
   private def createFlightInsert(flight: Flight): ConnectionIO[Int] =
-    sql"INSERT INTO flight (date, origin, destination) VALUES ($flight) ON CONFLICT DO NOTHING;"
+    sql"INSERT INTO flight (date, origin, destination, distance, airtime, departDelay, taxiOut, arriveDelay, taxiIn) VALUES ($flight) ON CONFLICT DO NOTHING;"
       .update.run
 
   private def createFlightInsert(flight: Seq[Flight]): ConnectionIO[Int] =
-    val insertStatement: String = "INSERT INTO flight (date, origin, destination) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;"
+    val insertStatement: String = "INSERT INTO flight (date, origin, destination, distance, airtime, departDelay, taxiOut, arriveDelay, taxiIn) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING;"
     Update[Flight](insertStatement).updateMany(flight)
 
   private def createRecordInsert(flight: Flight): ConnectionIO[Int] =
